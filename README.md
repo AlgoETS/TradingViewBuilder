@@ -13,4 +13,4 @@ TradingView Builder
 
 4. Save and add the indicator to your chart: Click the "Add to Chart" button in the Pine Editor to apply the indicator to the active chart. You can also save the script by clicking the "Save" button and giving it a name.
 
-5. Customize the EMA settings: Once the indicator is applied to your chart, you can change the settings by clicking on the gear icon next to the indicator label on the upper left side of the chart. In the settings window, you can adjust the length, source, color, and other visual preferences.
+5. Customize the Scripts settings: Once the indicator is applied to your chart, you can change the settings by clicking on the gear icon next to the indicator label on the upper left side of the chart. In the settings window, you can adjust the length, source, color, and other visual preferences.
