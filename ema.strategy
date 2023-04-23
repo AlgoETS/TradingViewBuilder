@@ -1,0 +1,23 @@
+//@version=5
+strategy("EMA Crossover Strategy", shorttitle="EMA Cross", overlay=true)
+
+// Input parameters
+shortTermLength = input(9, title="Short-term EMA Length", minval=1)
+longTermLength = input(21, title="Long-term EMA Length", minval=1)
+
+// Calculate EMAs
+shortTermEMA = ema(close, shortTermLength)
+longTermEMA = ema(close, longTermLength)
+
+// Buy and sell conditions
+longCondition = crossover(shortTermEMA, longTermEMA)
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+shortCondition = crossunder(shortTermEMA, longTermEMA)
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+
+// Plot EMAs on the chart
+plot(shortTermEMA, title="Short-term EMA", color=color.blue, linewidth=2)
+plot(longTermEMA, title="Long-term EMA", color=color.red, linewidth=2)
