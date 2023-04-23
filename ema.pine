@@ -1,0 +1,6 @@
+//@version=5
+indicator('Exponential Moving Average', shorttitle='EMA', overlay=true)
+length = input.int(9, minval=1, title='Length')
+src = close
+ema = ta.ema(src, length)
+plot(ema, title='EMA', color=color.new(color.blue, 0), linewidth=2)
