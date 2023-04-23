@@ -1,0 +1,28 @@
+//@version=4
+strategy("Bollinger Bands Strategy", shorttitle="BB Strat", overlay=true)
+
+// Input parameters
+length = input(20, minval=1, title="Length")
+src = close
+mult = input(2.0, title="StdDev Multiplier")
+
+// Calculate Bollinger Bands
+basis = sma(src, length)
+dev = mult * stdev(src, length)
+upper = basis + dev
+lower = basis - dev
+
+// Buy and sell conditions
+longCondition = crossover(src, lower)
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+shortCondition = crossunder(src, upper)
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+
+// Plot Bollinger Bands on the chart
+plot(basis, title="Bollinger Bands Basis", color=color.blue, linewidth=2)
+p1 = plot(upper, title="Upper Bollinger Band", color=color.red, linewidth=2)
+p2 = plot(lower, title="Lower Bollinger Band", color=color.green, linewidth=2)
+fill(p1, p2, color=color.gray, transp=85)
