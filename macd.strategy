@@ -1,0 +1,27 @@
+//@version=4
+strategy("MACD Strategy", shorttitle="MACD Strat", overlay=true)
+
+// Input parameters
+fast_length = input(12, minval=1, title="Fast Length")
+slow_length = input(26, minval=1, title="Slow Length")
+signal_length = input(9, minval=1, title="Signal Length")
+src = close
+fastMA = ema(src, fast_length)
+slowMA = ema(src, slow_length)
+
+// Calculate MACD and Signal Line
+macd = fastMA - slowMA
+signal = sma(macd, signal_length)
+
+// Buy and sell conditions
+longCondition = crossover(macd, signal)
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+shortCondition = crossunder(macd, signal)
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+
+// Plot MACD and Signal Line on the chart
+plot(macd, title="MACD", color=color.blue, linewidth=2, transp=70)
+plot(signal, title="Signal Line", color=color.red, linewidth=2, transp=70)
