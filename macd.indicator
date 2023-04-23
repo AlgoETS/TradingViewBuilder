@@ -1,0 +1,21 @@
+//@version=4
+study("Moving Average Convergence Divergence", shorttitle="MACD", overlay=false)
+fast_length = input(12, minval=1, title="Fast Length")
+slow_length = input(26, minval=1, title="Slow Length")
+signal_length = input(9, minval=1, title="Signal Length")
+src = close
+fastMA = ema(src, fast_length)
+slowMA = ema(src, slow_length)
+
+// Calculate MACD and Signal Line
+macd = fastMA - slowMA
+signal = sma(macd, signal_length)
+hist = macd - signal
+
+// Plot MACD and Signal Line
+plot(macd, title="MACD", color=color.blue, linewidth=2)
+plot(signal, title="Signal Line", color=color.red, linewidth=2)
+
+// Plot Histogram
+hist_color = hist >= 0 ? color.green : color.red
+plot(hist, title="Histogram", color=hist_color, style=plot.style_histogram, linewidth=2)
