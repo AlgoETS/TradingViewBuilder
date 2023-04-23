@@ -1,0 +1,25 @@
+//@version=4
+strategy("RSI Strategy", shorttitle="RSI Strat", overlay=true)
+
+// Input parameters
+length = input(14, minval=1, title="RSI Length")
+overbought = input(70, title="Overbought Level")
+oversold = input(30, title="Oversold Level")
+
+// Calculate RSI
+src = close
+rsi = rsi(src, length)
+
+// Buy and sell conditions
+longCondition = crossover(rsi, oversold)
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+shortCondition = crossunder(rsi, overbought)
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+
+// Plot RSI on the chart
+plot(rsi, title="RSI", color=color.blue, linewidth=2)
+hline(overbought, "Overbought", color=color.red)
+hline(oversold, "Oversold", color=color.green)
