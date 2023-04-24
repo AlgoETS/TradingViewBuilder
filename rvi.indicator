@@ -1,0 +1,23 @@
+// @version=4
+study("Relative Vigor Index (RVI)", shorttitle="RVI", overlay=false)
+
+// User-defined input parameters
+length = input(10, title="Length", minval=1)
+signalLength = input(4, title="Signal Length", minval=1)
+
+// RVI calculation
+numerator = close - open
+denominator = high - low
+
+numeratorSMA = sma(numerator, length)
+denominatorSMA = sma(denominator, length)
+
+rvi = numeratorSMA / denominatorSMA
+
+// Signal line calculation
+signalLine = sma(rvi, signalLength)
+
+// Plotting the RVI and its signal line
+plot(rvi, title="RVI", color=color.blue, linewidth=2)
+plot(signalLine, title="Signal Line", color=color.red, linewidth=2)
+hline(0, "Zero Line", color=color.gray)
