@@ -1,6 +1,4 @@
 // @version=4
-study("Standard Deviation Indicator", shorttitle="StdDev-I", overlay=true)
-
 // User-defined input parameters with default values
 n1 = input(20, title="Length", type=input.integer, defval=20)
 
