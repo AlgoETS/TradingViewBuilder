@@ -1,0 +1,11 @@
+// @version=4
+study("Standard Deviation", shorttitle="StdDev", overlay=true)
+
+// User-defined input parameters with default values
+n1 = input(20, title="Length", type=input.integer, defval=20)
+
+// Standard Deviation calculation
+std = stdev(close, n1)
+
+// Plotting the Standard Deviation
+plot(std, title="Standard Deviation", color=color.blue, linewidth=2)
