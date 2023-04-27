@@ -1,0 +1,24 @@
+// @version=4
+study("Standard Deviation Indicator", shorttitle="StdDev-I", overlay=true)
+
+// User-defined input parameters with default values
+n1 = input(20, title="Length", type=input.integer, defval=20)
+
+// Standard Deviation calculation
+std = stdev(close, n1)
+
+// Plotting the Standard Deviation
+plot(close + std, title="Upper StdDev", color=color.blue, linewidth=2)
+plot(close - std, title="Lower StdDev", color=color.red, linewidth=2)
+
+// Strategy implementation
+strategy("Standard Deviation Strategy", shorttitle="StdDev-S", overlay=true)
+
+// Trading strategy conditions
+longCondition = crossover(close, close + std)
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+shortCondition = crossunder(close, close - std)
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
