@@ -1,0 +1,18 @@
+// @version=4
+study("Linear Regression", shorttitle="LinReg", overlay=true)
+
+// User-defined input parameters with default values
+n1 = input(20, title="Length", type=input.integer, defval=20)
+n2 = input(2, title="Standard Deviation Multiplier", type=input.integer, defval=2)
+
+// Linear Regression calculation
+linreg = linreg(close, n1, 0)
+
+// Plotting the Linear Regression
+plot(linreg, title="Linear Regression", color=color.blue, linewidth=2)
+
+// Plotting the upper and lower bands
+upperBand = linreg + (n2 * stdev(close, n1))
+lowerBand = linreg - (n2 * stdev(close, n1))
+plot(upperBand, title="Upper Band", color=color.red, linewidth=1)
+plot(lowerBand, title="Lower Band", color=color.green, linewidth=1)
