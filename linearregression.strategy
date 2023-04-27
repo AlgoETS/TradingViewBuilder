@@ -1,0 +1,27 @@
+// @version=4
+strategy("Linear Regression Strategy", shorttitle="LinReg-S", overlay=true)
+
+// User-defined input parameters with default values
+n1 = input(20, title="Length", type=input.integer, defval=20)
+n2 = input(2, title="Standard Deviation Multiplier", type=input.integer, defval=2)
+
+// Linear Regression calculation
+linreg = linreg(close, n1, 0)
+
+// Upper and lower bands calculation
+upperBand = linreg + (n2 * stdev(close, n1))
+lowerBand = linreg - (n2 * stdev(close, n1))
+
+// Trading strategy conditions
+longCondition = crossover(close, lowerBand)
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+shortCondition = crossunder(close, upperBand)
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+
+// Plotting the Linear Regression and bands
+plot(linreg, title="Linear Regression", color=color.blue, linewidth=2)
+plot(upperBand, title="Upper Band", color=color.red, linewidth=1)
+plot(lowerBand, title="Lower Band", color=color.green, linewidth=1)
