@@ -1,0 +1,84 @@
+//@version=5
+strategy("Time Series Momentum Effect", overlay=false)
+
+// Define asset universe
+asset_universe = ["CME_S1", "CME_W1", "CME_SM1", "CME_BO1", "CME_C1", "CME_O1", "CME_LC1", "CME_FC1", "CME_LN1", "CME_GC1", "CME_SI1", "CME_PL1", "CME_CL1", "CME_HG1", "CME_LB1", "CME_NG1", "CME_PA1", "CME_RR1", "CME_DA1", "CME_RB1", "CME_KW1", "ICE_CC1", "ICE_CT1", "ICE_KC1", "ICE_O1", "ICE_OJ1", "ICE_SB1", "ICE_RS1", "ICE_GO1", "ICE_WT1", "CME_AD1", "CME_BP1", "CME_CD1", "CME_EC1", "CME_JY1", "CME_MP1", "CME_NE1", "CME_SF1", "ICE_DX1", "CME_NQ1", "EUREX_FDAX1", "CME_ES1", "EUREX_FSMI1", "EUREX_FSTX1", "LIFFE_FCE1", "LIFFE_Z1", "SGX_NK1", "CME_MD1", "CME_TY1", "CME_FV1", "CME_TU1", "ASX_XT1", "ASX_YT1", "EUREX_FGBL1", "EUREX_FBTP1", "EUREX_FGBM1", "EUREX_FGBS1", "SGX_JB1", "LIFFE_R1", "MX_CGB1"]
+
+// Define input parameters
+targeted_volatility = input(title="Targeted Volatility", type=input.float, defval=0.1, step=0.01)
+vol_target_period = input(title="Volatility Target Period", type=input.integer, defval=60, minval=1)
+leverage_cap = input(title="Leverage Cap", type=input.float, defval=4, minval=1)
+
+// Define rolling window period
+period = 12 * 21
+
+// Initialize arrays and variables
+data = array.new_float(length(asset_universe))
+weights = array.new_float(length(asset_universe))
+long_symbols = array.new_string(0)
+short_symbols = array.new_string(0)
+long_leverage = 0.0
+short_leverage = 0.0
+
+// Define custom function to calculate historical volatility
+get_volatility = (data, length) => {
+    returns = array.new_float(length)
+    for i = 0 to length - 1
+        returns[i] := data[i] / data[i + 1] - 1.0
+    stddev(returns, length) * sqrt(252)
+}
+
+// Loop over assets and calculate performance and volatility data
+for i = 0 to length(asset_universe) - 1
+    symbol = asset_universe[i]
+    data[i] := security(symbol, timeframe.period_daily)
+    performance = data[i][0] / data[i][period - 1] - 1.0
+    volatility = get_volatility(data[i], vol_target_period)
+    if performance > 0
+        array.push(long_symbols, symbol)
+    else
+        array.push(short_symbols, symbol)
+
+// Calculate weights for long and short positions
+if array.size(long_symbols) > 0
+  long_returns = array.new_float(length(long_symbols), na)
+  long_volatility = array.new_float(length(long_symbols), na)
+for i = 0 to array.size(long_symbols) - 1
+  index = array.indexof(asset_universe, long_symbols[i])
+  long_returns[i] := data[index][0] / data[index][period - 1] - 1.0
+  long_volatility[i] := get_volatility(data[index], vol_target_period)
+  long_weights = long_returns / long_volatility
+  long_weights /= sum(long_weights)
+  long_leverage = min(leverage_cap, targeted_volatility / std(long_weights, 1))
+  if array.size(short_symbols) > 0
+    short_returns = array.new_float(length(short_symbols), na)
+    short_volatility = array.new_float(length(short_symbols), na)
+for i = 0 to array.size(short_symbols) - 1
+    index = array.indexof(asset_universe, short_symbols[i])
+    short_returns[i] := 1.0 - data[index][0] / data[index][period - 1]
+    short_volatility[i] := get_volatility(data[index], vol_target_period)
+    short_weights = short_returns / short_volatility
+    short_weights /= sum(short_weights)
+    short_leverage = min(leverage_cap, targeted_volatility / std(short_weights, 1))
+
+// Calculate final weights and positions
+for i = 0 to length(asset_universe) - 1
+  index = array.indexof(long_symbols, asset_universe[i])
+  if index != -1
+    weights[i] := long_weights[index] * long_leverage
+  else
+    index = array.indexof(short_symbols, asset_universe[i])
+  if index != -1
+    weights[i] := -short_weights[index] * short_leverage
+  else
+    weights[i] := 0.0
+
+// Open positions based on weights
+for i = 0 to length(asset_universe) - 1
+  if weights[i] > 0
+    strategy.entry(id = asset_universe[i], long = true, qty = weights[i])
+  else if weights[i] < 0
+  strategy.entry(id = asset_universe[i], long = false, qty = abs(weights[i]))
+
+// Close all positions at the end of the day
+strategy.close_all()
