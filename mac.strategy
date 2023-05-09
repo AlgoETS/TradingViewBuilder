@@ -1,0 +1,28 @@
+//@version=5
+strategy("Moving Average Crossover")
+
+// Define input parameters
+fast_length = input(title="Fast Length", type=input.integer, defval=10, minval=1)
+slow_length = input(title="Slow Length", type=input.integer, defval=20, minval=1)
+
+// Define moving averages
+fast_ma = sma(close, fast_length)
+slow_ma = sma(close, slow_length)
+
+// Buy and sell signals
+buy_signal = crossover(fast_ma, slow_ma)
+sell_signal = crossunder(fast_ma, slow_ma)
+
+// Enter long position on buy signal
+if buy_signal
+    strategy.entry("Buy", strategy.long)
+
+// Exit long position on sell signal
+if sell_signal
+    strategy.close("Buy")
+
+// Plot moving averages and signals
+plot(fast_ma, color=color.blue, title="Fast MA")
+plot(slow_ma, color=color.orange, title="Slow MA")
+plotshape(buy_signal, style=shape.triangleup, color=color.green, title="Buy Signal")
+plotshape(sell_signal, style=shape.triangledown, color=color.red, title="Sell Signal")
