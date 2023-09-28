@@ -1,4 +1,4 @@
-//@version=5
+//@version=4
 indicator('Exponential Moving Average', shorttitle='EMA', overlay=true)
 length = input.int(9, minval=1, title='Length')
 src = close
