@@ -1,4 +1,4 @@
-//@version=5
+//@version=4
 strategy("Time Series Momentum Effect", overlay=false)
 
 // Define asset universe
